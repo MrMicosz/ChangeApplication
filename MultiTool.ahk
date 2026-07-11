@@ -1057,7 +1057,7 @@ DoTranslate(selectedText) {
     try FileDelete(tempIn)
     FileAppend(selectedText, tempIn, "UTF-8")
 
-    exitCode := RunWait(PythonCmd ' "' translator '"', , "Hide")
+    exitCode := RunWait(PythonCmd ' "' translator '"', ScriptDir "\translator", "Hide")
     if exitCode != 0 {
         return Map("success", false, "error", GetText("tr_python_fail") . " (exit " . exitCode . ")")
     }
@@ -1271,12 +1271,14 @@ ShowStatusToast(text, durationMs := 2200) {
 }
 
 DetectPython() {
-    for cmd in ["python", "py"] {
-        exitCode := RunWait(A_ComSpec ' /c ' cmd ' -c "import sys; sys.exit(0)"', , "Hide")
-        if exitCode = 0
-            return cmd
+    for cmd in ["py", "python"] {
+        try {
+            exitCode := RunWait(A_ComSpec ' /c ' cmd ' -c "import sys; sys.exit(0)"', , "Hide")
+            if exitCode = 0
+                return cmd
+        }
     }
-    return "python"
+    return "py"
 }
 
 ; ═══════════════════════════════════════════════════════════════
